@@ -991,6 +991,7 @@ dependencies = [
 name = "mai_git"
 version = "0.0.0"
 dependencies = [
+ "actix-http",
  "actix-web",
  "dotenv",
  "env_logger",

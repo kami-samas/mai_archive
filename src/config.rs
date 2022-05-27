@@ -9,6 +9,7 @@ use std::{
     }
 };
 
+#[derive(Clone)]
 pub struct Config {
     pub port: u16,
     pub jwt_key: String,
