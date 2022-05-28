@@ -22,7 +22,7 @@ impl Config {
         Config {
             port: Config::get_env_or("PORT", 3000),
             jwt_key: Config::get_env("JWT_KEY"),
-            db_uri: Config::get_env("DATABASE_URI"),
+            db_uri: Config::get_env("DATABASE_URL"),
         }
     }
 

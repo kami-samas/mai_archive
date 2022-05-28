@@ -2,4 +2,5 @@
 
 pub use super::prisma_migrations::Entity as PrismaMigrations;
 pub use super::project::Entity as Project;
+pub use super::project_to_user::Entity as ProjectToUser;
 pub use super::user::Entity as User;

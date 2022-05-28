@@ -1,6 +1,6 @@
 use actix_web::{
     middleware::Logger,
-    web::{Data},
+    web::Data,
     App, HttpServer,
 };
 use env_logger::Env;
@@ -15,6 +15,8 @@ extern crate dotenv;
 
 mod config;
 mod data;
+mod db;
+mod routes;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -23,7 +25,7 @@ async fn main() -> std::io::Result<()> {
     let config = config::Config::new();
 
     let mut opt = ConnectOptions::new(config.db_uri.clone());
-    opt.max_connections(100)
+    opt.max_connections(50)
         .min_connections(5)
         .connect_timeout(Duration::from_secs(8))
         .idle_timeout(Duration::from_secs(8))

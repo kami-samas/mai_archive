@@ -24,8 +24,7 @@ model Project {
   provider Provider
   url      String   @db.Text
   private  Boolean
-  User     User?    @relation(fields: [user_id], references: [id])
-  user_id  String?
+  User     User[]
 }
 
 enum Provider {

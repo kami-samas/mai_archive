@@ -998,6 +998,7 @@ dependencies = [
  "figlet-rs",
  "log",
  "sea-orm",
+ "serde",
  "serde_json",
 ]
 
