@@ -1,14 +1,26 @@
-/*
-  Warnings:
+-- CreateEnum
+CREATE TYPE "Provider" AS ENUM ('GITHUB', 'GITLAB', 'BITBUCKET', 'CUSTOM');
 
-  - You are about to drop the column `user_id` on the `Project` table. All the data in the column will be lost.
+-- CreateTable
+CREATE TABLE "User" (
+    "id" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "token" CHAR(96) NOT NULL,
+    "git_token" TEXT,
 
-*/
--- DropForeignKey
-ALTER TABLE "Project" DROP CONSTRAINT "Project_user_id_fkey";
+    CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+);
 
--- AlterTable
-ALTER TABLE "Project" DROP COLUMN "user_id";
+-- CreateTable
+CREATE TABLE "Project" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "provider" "Provider" NOT NULL,
+    "url" TEXT NOT NULL,
+    "private" BOOLEAN NOT NULL,
+
+    CONSTRAINT "Project_pkey" PRIMARY KEY ("id")
+);
 
 -- CreateTable
 CREATE TABLE "_ProjectToUser" (

@@ -14,7 +14,10 @@ log = "0.4.17"
 dotenv = "0.15.0"
 actix-http = "3.0.4"
 serde = { version = "1.0.137", features = ["derive"] }
+anyhow = "1.0.57"
+derive_more = "0.99.17"
 
 [dependencies.sea-orm]
 version = "0.8.0"
-features = ["runtime-actix-rustls", "sqlx-postgres", "macros"]
+features = ["runtime-actix-native-tls", "sqlx-postgres", "macros"]
+default-features = false
