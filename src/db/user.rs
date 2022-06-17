@@ -17,6 +17,7 @@ pub struct Model {
     pub email: String,
     pub token: String,
     pub git_token: Option<String>,
+    pub username: String,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveColumn)]
@@ -25,6 +26,7 @@ pub enum Column {
     Email,
     Token,
     GitToken,
+    Username,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DerivePrimaryKey)]
@@ -50,6 +52,7 @@ impl ColumnTrait for Column {
             Self::Email => ColumnType::Text.def(),
             Self::Token => ColumnType::Char(Some(96u32)).def(),
             Self::GitToken => ColumnType::Text.def().null(),
+            Self::Username => ColumnType::Text.def(),
         }
     }
 }

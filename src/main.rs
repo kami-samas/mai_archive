@@ -3,16 +3,18 @@ use env_logger::Env;
 use figlet_rs::FIGfont;
 use sea_orm::{ConnectOptions, Database};
 use std::{process::Command, time::Duration};
-
+use sonyflake::Sonyflake;
+#[macro_use]
+extern crate lazy_static;
 #[macro_use]
 extern crate serde_json;
-extern crate dotenv;
 
 mod config;
 mod data;
 mod db;
 mod models;
 mod routes;
+mod util;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -34,12 +36,15 @@ async fn main() -> std::io::Result<()> {
         .sqlx_logging(true);
 
     let database = Database::connect(opt).await.unwrap();
-
     log::info!(target: "core::database","Connected to the database");
-
+    
+    let id_generator = Sonyflake::new().unwrap();
+    log::info!(target: "core::id_generator", "Initialized ID Generator");
+    
     let api_data = Data::new(data::Data {
         database,
         config: config.clone(),
+        id_generator,
     });
 
     HttpServer::new(move || {
@@ -47,9 +52,9 @@ async fn main() -> std::io::Result<()> {
             .wrap(Logger::default())
             .app_data(api_data.clone())
             .service(
-                web::scope("/")
-                    .service(routes::get_routes())
-                    .service(routes::user::get_routes()),
+                web::scope("/v1")
+                    .service(routes::user::get_routes())
+                    .service(routes::get_routes()),
             )
     })
     .bind(("0.0.0.0", config.port))?
