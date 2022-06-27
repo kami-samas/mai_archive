@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,7 +9,7 @@ datasource db {
 
 model User {
   id        String    @id
-  username String @unique @default("Axel")
+  username  String    @unique @default("Axel")
   email     String
   token     String    @db.Char(96)
   git_token String?

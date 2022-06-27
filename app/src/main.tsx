@@ -7,8 +7,9 @@ import './index.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <ChakraProvider theme={theme}>
+    <ChakraProvider theme={{ ...theme, colors: { ...theme.colors, primary: theme.colors['red'] } }}>
       <App />
     </ChakraProvider>
   </React.StrictMode>
 )
+
