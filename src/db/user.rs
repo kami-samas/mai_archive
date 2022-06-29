@@ -18,6 +18,7 @@ pub struct Model {
     pub token: String,
     pub git_token: Option<String>,
     pub username: String,
+    pub created_at: DateTimeUtc,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveColumn)]
@@ -27,6 +28,7 @@ pub enum Column {
     Token,
     GitToken,
     Username,
+    CreatedAt,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DerivePrimaryKey)]
@@ -53,6 +55,7 @@ impl ColumnTrait for Column {
             Self::Token => ColumnType::Char(Some(96u32)).def(),
             Self::GitToken => ColumnType::Text.def().null(),
             Self::Username => ColumnType::Text.def(),
+            Self::CreatedAt => ColumnType::Timestamp.def(),
         }
     }
 }

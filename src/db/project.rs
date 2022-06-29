@@ -19,6 +19,7 @@ pub struct Model {
     pub provider: Provider,
     pub url: String,
     pub private: bool,
+    pub created_at: DateTimeUtc,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveColumn)]
@@ -28,6 +29,7 @@ pub enum Column {
     Provider,
     Url,
     Private,
+    CreatedAt,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DerivePrimaryKey)]
@@ -54,6 +56,7 @@ impl ColumnTrait for Column {
             Self::Provider => Provider::db_type(),
             Self::Url => ColumnType::Text.def(),
             Self::Private => ColumnType::Boolean.def(),
+            Self::CreatedAt => ColumnType::Timestamp.def(),
         }
     }
 }

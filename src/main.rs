@@ -4,10 +4,13 @@ use figlet_rs::FIGfont;
 use sea_orm::{ConnectOptions, Database};
 use std::{process::Command, time::Duration};
 use sonyflake::Sonyflake;
+
 #[macro_use]
 extern crate lazy_static;
 #[macro_use]
 extern crate serde_json;
+#[macro_use]
+extern crate serde;
 
 mod config;
 mod data;

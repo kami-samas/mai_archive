@@ -46,7 +46,7 @@ export const Signup = () => {
                                 Email address
                             </Text>
                         </FormLabel>
-                        <Input {...register("email")} type='email' />
+                        <Input {...register("email", { required: true })} type='email'  />
                         <FormHelperText>We'll never share your email.</FormHelperText>
                         <br />
                         <FormLabel htmlFor='username'>
@@ -56,7 +56,7 @@ export const Signup = () => {
                                 Username
                             </Text>
                         </FormLabel>
-                        <Input {...register("username")} type='text' />
+                        <Input {...register("username", { required: true })} type='text' />
                         <FormHelperText>Pick out a unique one.</FormHelperText>
                         <br />
                         <FormLabel htmlFor='password'>
@@ -66,7 +66,7 @@ export const Signup = () => {
                                 Password
                             </Text>
                         </FormLabel>
-                        <Input {...register("password")} type='password' />
+                        <Input {...register("password", { required: true })} type='password' />
                         <FormHelperText>At least 8 characters.</FormHelperText>
                         <br />
                         <Button
