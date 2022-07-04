@@ -18,7 +18,7 @@ pub struct Model {
     pub token: String,
     pub git_token: Option<String>,
     pub username: String,
-    pub created_at: DateTimeUtc,
+    pub created_at: DateTime,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveColumn)]

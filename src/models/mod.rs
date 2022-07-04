@@ -9,7 +9,8 @@ lazy_static! {
         r"^([a-z0-9_+]([a-z0-9_+.]*[a-z0-9_+])?)@([a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,6})"
     )
     .unwrap();
-    pub static ref USERNAME_REGEX: regex::Regex = Regex::new(r"^[A-Za-z][A-Za-z0-9_]{4,14}$").unwrap();
+    pub static ref USERNAME_REGEX: regex::Regex =
+        Regex::new(r"^[A-Za-z][A-Za-z0-9_]{4,14}$").unwrap();
 }
 
 #[derive(Debug, Display)]

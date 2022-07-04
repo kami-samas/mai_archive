@@ -1,18 +1,24 @@
-use argon2::{password_hash::SaltString, Argon2, PasswordHasher, Error, PasswordHash, PasswordVerifier};
-use rand::rngs::OsRng;
 use crate::models::USERNAME_REGEX;
+use argon2::{
+    password_hash::SaltString, Argon2, Error, PasswordHash, PasswordHasher, PasswordVerifier,
+};
+use rand::rngs::OsRng;
 
 pub fn generate_token(password: &str) -> Result<String, Error> {
     Ok(
-        match Argon2::default().hash_password(password.as_bytes(), &SaltString::generate(&mut OsRng)) {
+        match Argon2::default()
+            .hash_password(password.as_bytes(), &SaltString::generate(&mut OsRng))
+        {
             Ok(val) => val.to_string(),
-            Err(val) => val.to_string()
-        }
+            Err(val) => val.to_string(),
+        },
     )
 }
 
 pub fn validate_token(password: &str, hash: &str) -> bool {
-    Argon2::default().verify_password(password.as_bytes(), &PasswordHash::new(hash).unwrap()).is_ok()
+    Argon2::default()
+        .verify_password(password.as_bytes(), &PasswordHash::new(hash).unwrap())
+        .is_ok()
 }
 
 pub fn validate_username(username: &str) -> Result<String, String> {

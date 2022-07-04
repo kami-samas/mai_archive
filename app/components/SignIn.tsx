@@ -10,19 +10,16 @@ import {
     Button
 } from '@chakra-ui/react'
 import { useForm, SubmitHandler } from "react-hook-form";
-import { create } from '../helpers/api/user'
 
 type Input = {
-    username: string,
     email: string,
     password: string,
 }
-export const Signup = () => {
+export const Signin = () => {
     const { register, handleSubmit, formState: { errors } } = useForm<Input>();
    // TODO
     const onSubmit: SubmitHandler<Input> = async data => {
-        const log = await create(data).catch(console.log);
-        console.log(log);
+        console.log(data);
     };
     
     return (
@@ -53,16 +50,6 @@ export const Signup = () => {
                         </FormLabel>
                         <Input {...register("email", { required: true })} type='email'  />
                         <FormHelperText>We'll never share your email.</FormHelperText>
-                        <br />
-                        <FormLabel htmlFor='username'>
-                            <Text
-                                bgGradient="linear(to-r, red.400,pink.400)"
-                                bgClip="text">
-                                Username
-                            </Text>
-                        </FormLabel>
-                        <Input {...register("username", { required: true })} type='text' />
-                        <FormHelperText>Pick out a unique one.</FormHelperText>
                         <br />
                         <FormLabel htmlFor='password'>
                             <Text

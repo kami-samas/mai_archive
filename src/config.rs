@@ -1,13 +1,5 @@
 use dotenv::dotenv;
-use std::{
-    env,
-    fmt::{
-        Debug
-    },
-    str::{
-        FromStr
-    }
-};
+use std::{env, fmt::Debug, str::FromStr};
 
 #[derive(Clone)]
 pub struct Config {

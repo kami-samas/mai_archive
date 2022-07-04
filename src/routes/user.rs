@@ -1,11 +1,14 @@
 use crate::{
     data::Data,
     db::user as User,
+    models::{
+        user::{UpdateUserSettings, UserCreateForm, UserDeleteForm, UserLoginForm},
+        Response, EMAIL_REGEX,
+    },
     util::user::{generate_token, validate_token, validate_username},
-    models::{user::{UserCreateForm, UserLoginForm, UserDeleteForm, UpdateUserSettings}, Response, EMAIL_REGEX},
 };
-use actix_web::{get, post, web, HttpResponse, Responder, Scope, delete, patch};
-use sea_orm::{ActiveModelTrait, ColumnTrait, EntityTrait, QueryFilter, ModelTrait, Set};
+use actix_web::{delete, get, patch, post, web, HttpResponse, Responder, Scope};
+use sea_orm::{ActiveModelTrait, ColumnTrait, EntityTrait, ModelTrait, QueryFilter, Set};
 
 pub fn get_routes() -> Scope {
     web::scope("/user")
@@ -16,7 +19,6 @@ pub fn get_routes() -> Scope {
         .service(update)
 }
 
-
 #[get("/{user_id}")]
 async fn info(path: web::Path<(String,)>, state: web::Data<Data>) -> Response<impl Responder> {
     let user_id = path.into_inner().0;
@@ -24,12 +26,12 @@ async fn info(path: web::Path<(String,)>, state: web::Data<Data>) -> Response<im
         .one(&state.database)
         .await?
     {
-        Some(val) => {
-            Ok(HttpResponse::Ok().json(json!({
-                "id": val.id,
-                "email": val.email
-            })))
-        }
+        Some(val) => Ok(HttpResponse::Ok().json(json!({
+            "id": val.id,
+            "email": val.email,
+            "username": val.username,
+            "created_at": val.created_at,
+        }))),
         None => Ok(HttpResponse::NotFound().body("Couldnt find user")),
     }
 }
@@ -46,8 +48,7 @@ async fn create(
         );
     }
     if let Err(msg) = validate_username(&form.username) {
-        return Ok(HttpResponse::BadRequest()
-            .body(msg));
+        return Ok(HttpResponse::BadRequest().body(msg));
     }
 
     if User::Entity::find()
@@ -86,27 +87,25 @@ async fn create(
     Ok(HttpResponse::Ok().json(json!({
             "id": user_data.id,
             "email": user_data.email,
-            "username": user_data.username
+            "username": user_data.username,
+            "created_at": user_data.created_at,
+            "token": user_data.token
     })))
-
 }
 
 #[post("/login")]
-async fn login(
-    state: web::Data<Data>,
-    form: web::Json<UserLoginForm>,
-) -> Response<impl Responder> {
+async fn login(state: web::Data<Data>, form: web::Json<UserLoginForm>) -> Response<impl Responder> {
     let user = User::Entity::find()
         .filter(User::Column::Email.eq(form.email.to_owned()))
         .one(&state.database)
         .await?;
-    
+
     if user.is_none() {
         return Ok(HttpResponse::BadRequest().body("Invalid Credentials"));
     }
-    
+
     let user = user.unwrap();
-    
+
     if !validate_token(&form.password, &user.token) {
         return Ok(HttpResponse::BadRequest().body("Invalid Credentials"));
     }
@@ -130,11 +129,11 @@ async fn delete(
         .filter(User::Column::Id.eq(form.id.to_owned()))
         .one(&state.database)
         .await?;
-    
+
     if user.is_none() {
         return Ok(HttpResponse::BadRequest().body("There is no such user"));
     }
-    
+
     let user = user.unwrap();
 
     if !validate_token(&form.password, &user.token) {
@@ -142,7 +141,7 @@ async fn delete(
     }
 
     user.delete(&state.database).await?;
-    
+
     Ok(HttpResponse::Ok().body("User deleted"))
 }
 
@@ -155,11 +154,11 @@ async fn update(
         .filter(User::Column::Email.eq(form.email.to_owned()))
         .one(&state.database)
         .await?;
-    
+
     if user.is_none() {
         return Ok(HttpResponse::BadRequest().body("There is no such user"));
     }
-    
+
     let user = user.unwrap();
 
     if !validate_token(&form.current_token, &user.token) {
@@ -189,9 +188,7 @@ async fn update(
 
     if let Some(new_email) = &form.email {
         if !EMAIL_REGEX.is_match(&new_email) {
-            return Ok(
-                HttpResponse::BadRequest().body("Invalid email was provided")
-            );
+            return Ok(HttpResponse::BadRequest().body("Invalid email was provided"));
         }
 
         if User::Entity::find()
@@ -217,7 +214,7 @@ async fn update(
             .await?
             .is_some()
         {
-            return Ok(HttpResponse::Conflict().body("Username already exists"));    
+            return Ok(HttpResponse::Conflict().body("Username already exists"));
         }
 
         to_change.username = Some(new_username.to_string());
@@ -248,7 +245,7 @@ async fn update(
 
     // Perform all updates
     update_model.update(&state.database).await?;
-    
+
     Ok(HttpResponse::Ok().json(json!({
             "id": user.id,
             "email": user.email,
@@ -257,5 +254,4 @@ async fn update(
             "git_token": user.git_token,
             "created_at": user.created_at,
     })))
-
 }

@@ -2,8 +2,8 @@ use actix_web::{middleware::Logger, web, web::Data, App, HttpServer};
 use env_logger::Env;
 use figlet_rs::FIGfont;
 use sea_orm::{ConnectOptions, Database};
-use std::{process::Command, time::Duration};
 use sonyflake::Sonyflake;
+use std::{process::Command, time::Duration};
 
 #[macro_use]
 extern crate lazy_static;
@@ -40,10 +40,10 @@ async fn main() -> std::io::Result<()> {
 
     let database = Database::connect(opt).await.unwrap();
     log::info!(target: "core::database","Connected to the database");
-    
+
     let id_generator = Sonyflake::new().unwrap();
     log::info!(target: "core::id_generator", "Initialized ID Generator");
-    
+
     let api_data = Data::new(data::Data {
         database,
         config: config.clone(),
