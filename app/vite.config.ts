@@ -3,6 +3,6 @@ import react from '@vitejs/plugin-react'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  assetsInclude: ['**/*.svg'],
+  assetsInclude: ['**/*.svg', 'assets/styles/*'],
   plugins: [react()]
 })

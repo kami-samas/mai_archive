@@ -1,2 +1,6 @@
 export * from './Header'
 export * from './SignUp'
+export * from './SignIn'
+export * from './User'
+export * from './Sidebar'
+export * from './Home'

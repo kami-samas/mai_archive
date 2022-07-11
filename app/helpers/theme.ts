@@ -1,5 +1,6 @@
 import { extendTheme } from '@chakra-ui/react'
 import { mode } from '@chakra-ui/theme-tools'
+import { CardBodyComponent, CardComponent, CardHeaderComponent } from '../styles'
 
 export default extendTheme({
     initialColorMode: 'dark',
@@ -19,4 +20,4 @@ export default extendTheme({
             }
         })
     }
-})
+}, CardBodyComponent, CardHeaderComponent, CardComponent)

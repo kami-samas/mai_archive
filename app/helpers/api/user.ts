@@ -1,13 +1,11 @@
 import { invoke } from '@tauri-apps/api/tauri'
+import { UserResponse } from './types';
 
-interface User {
-    id: string;
-    username: string;
-    email: string;
-    token?: string;
-    git_token?: string;
-}
 
 export const create = async (obj: { username: string; email: string; password: string; }) => {
-    return await invoke('user_create', obj)
+    return await invoke('user_create', obj) as UserResponse
+}
+
+export const login = async (obj: { email: string; password: string; }) => {
+    return await invoke('user_login', obj) as UserResponse
 }

@@ -16,9 +16,8 @@ pub fn get_routes() -> Scope {
 async fn info(state: web::Data<Data>) -> Response<impl Responder> {
     let projects = Project::find().all(&state.database).await?;
     let users = User::find().all(&state.database).await?;
-    Ok(HttpResponse::Ok().body(format!(
-        "The projects size {} and the users size {}.",
-        projects.len(),
-        users.len()
-    )))
+    Ok(HttpResponse::Ok().json(json!({
+        "projects": projects.len(),
+        "users": users.len(),
+    })))
 }

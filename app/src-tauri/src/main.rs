@@ -7,6 +7,7 @@ pub mod state;
 
 use serde::{Deserialize, Serialize};
 use surf::{Config, Url};
+use chrono::{DateTime, Utc, Timelike};
 
 pub const BASE_API: &str = "http://45.134.10.233:8989";
 pub const USER: &str = "/v1/user";
@@ -16,8 +17,13 @@ struct ErrorResponse {
     message: String
 }
 
+#[derive(Deserialize, Serialize)]
+struct Response {
+    message: String
+}
+
 #[derive(Deserialize, Serialize, Debug)]
-struct UserCreateResponse {
+struct UserResponse {
     pub id: String,
     pub username: String,
     pub email: String,
@@ -31,7 +37,7 @@ async fn user_create(
     username: String,
     email: String,
     password: String,
-) -> Result<UserCreateResponse, ErrorResponse> {
+) -> Result<UserResponse, ErrorResponse> {
     let body = serde_json::json!({
         "username": username,
         "email": email,
@@ -44,25 +50,16 @@ async fn user_create(
     if res.status() != http_types::StatusCode::Ok {
         let msg = res.body_string().await.unwrap();
         return Err(ErrorResponse {
-            message: format!("Status not OK. Received: {}. Message: {}", res.status(), msg)
+            message: format!("{}. Code: {}", msg, res.status())
         })
     }
-    println!("{:?}", res);
-
-    let response: UserCreateResponse = res.body_json().await.unwrap();
-    // Ok(UserCreateResponse {
-    //     id: response.id,
-    //     username: response.username,
-    //     email: response.email,
-    //     created_at: response.created_at,
-    //     token: response.token,
-    // })
-    Ok(UserCreateResponse {
-        id: "".to_string(),
-        username: "".to_string(),
-        email: "".to_string(),
-        created_at: "".to_string(),
-        token: "".to_string()
+    let response: UserResponse = res.body_json().await.unwrap();
+    Ok(UserResponse {
+        id: response.id,
+        username: response.username,
+        email: response.email,
+        created_at: response.created_at,
+        token: response.token
     })
 }
 
@@ -76,7 +73,43 @@ async fn user_update() {}
 async fn user_delete() {}
 
 #[tauri::command]
-async fn user_login() {}
+async fn user_login(
+    state: tauri::State<'_, state::State>,
+    email: String,
+    password: String,
+) -> Result<UserResponse, ErrorResponse> {
+    let body = serde_json::json!({
+        "email": email,
+        "password": password
+    });
+    let mut res = state
+        .client
+        .post(format!("{}/login", USER))
+        .body(http_types::Body::from_json(&body).unwrap()).await.expect("user login has errored");
+        if res.status() != http_types::StatusCode::Ok {
+            let msg = res.body_string().await.unwrap();
+            return Err(ErrorResponse {
+                message: format!("{}. Code: {}", msg, res.status())
+            })
+        }
+        let response: UserResponse = res.body_json().await.unwrap();
+        Ok(UserResponse {
+            id: response.id,
+            username: response.username,
+            email: response.email,
+            created_at: response.created_at,
+            token: response.token
+        })
+}
+
+#[tauri::command]
+async fn get_am_pm() -> Result<Response, ErrorResponse> {
+    let now = Utc::now();
+    let (is_pm, _hour) = now.hour12();
+    Ok(Response {
+        message: if is_pm { "Good Evening" } else { "Good Morning" }.to_string()
+    })
+}
 
 fn main() {
     let context = tauri::generate_context!();
@@ -92,7 +125,8 @@ fn main() {
             user_get,
             user_update,
             user_delete,
-            user_login
+            user_login,
+            get_am_pm
         ])
         // .menu(tauri::Menu::os_default(&context.package_info().name))
         .run(context)
