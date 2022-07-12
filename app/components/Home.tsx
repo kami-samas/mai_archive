@@ -10,7 +10,7 @@ import { AniNumber } from './AniNumber'
 export const Home = () => {
     const [info, setInfo] = useState<{ projects: number; users: number }>({ projects: 0, users: 0 });
     useEffect(() => {
-        get_info().then(setInfo);
+        get_info().then(setInfo).catch(console.log);
     }, []);
 
     return (

@@ -11,6 +11,7 @@ use chrono::{Utc, Timelike};
 
 pub const BASE_API: &str = "http://45.134.10.233:8989";
 pub const USER: &str = "/v1/user";
+pub const INFO: &str = "/v1/info";
 
 #[derive(Deserialize, Serialize)]
 struct ErrorResponse {
@@ -60,13 +61,7 @@ async fn user_create(
         })
     }
     let response: UserResponse = res.body_json().await.unwrap();
-    Ok(UserResponse {
-        id: response.id,
-        username: response.username,
-        email: response.email,
-        created_at: response.created_at,
-        token: response.token
-    })
+    Ok(response)
 }
 
 #[tauri::command]
@@ -99,13 +94,7 @@ async fn user_login(
             })
         }
         let response: UserResponse = res.body_json().await.unwrap();
-        Ok(UserResponse {
-            id: response.id,
-            username: response.username,
-            email: response.email,
-            created_at: response.created_at,
-            token: response.token
-        })
+        Ok(response)
 }
 
 #[tauri::command]
@@ -120,8 +109,16 @@ async fn get_am_pm() -> Result<Response, ErrorResponse> {
 #[tauri::command]
 async fn get_info(
     state: tauri::State<'_, state::State>,
-) -> Response<InfoResponse, ErrorResponse> {
-    let mut res = state.client.get(USER);
+) -> Result<InfoResponse, ErrorResponse> {
+    let mut res = state.client.get(INFO).await.expect("getting info has errored");
+    if res.status() != http_types::StatusCode::Ok {
+        let msg = res.body_string().await.unwrap();
+        return Err(ErrorResponse {
+            message: format!("{}. Code: {}", msg, res.status())
+        })
+    }
+    let response: InfoResponse = res.body_json().await.unwrap();
+    Ok(response)
 }
 fn main() {
     let context = tauri::generate_context!();
@@ -139,6 +136,7 @@ fn main() {
             user_delete,
             user_login,
             get_am_pm,
+            get_info
         ])
         // .menu(tauri::Menu::os_default(&context.package_info().name))
         .run(context)

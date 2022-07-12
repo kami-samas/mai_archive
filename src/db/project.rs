@@ -19,7 +19,7 @@ pub struct Model {
     pub provider: Provider,
     pub url: String,
     pub private: bool,
-    pub created_at: DateTimeUtc,
+    pub created_at: DateTime,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveColumn)]
