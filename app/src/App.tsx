@@ -1,19 +1,29 @@
 import {
   Box
 } from '@chakra-ui/react';
-import { Header, User, Sidebar, Home } from '../components/index';
+import { useState } from 'react';
+import { Header, User, Sidebar, Home, Settings } from '../components';
 import { useLocalForage } from '../helpers/hooks/useLocalForage';
 import { User as UserType } from '../helpers/interfaces';
 
-export default function App() {
+export default () => {
   const [user, setUser, _userLoading] = useLocalForage('user') as [UserType, any, boolean];
+  const [tab, setTab] = useState('Home');
+  const renderTab = () => {
+    switch (tab) {
+      case 'Home':
+        return <Home />;
+      case 'Settings':
+        return <Settings />;
+    }
+  }
   return (
     <Box>
       <Header user={user} />
       {
         user.id ? <>
-          <Sidebar />
-          <Home />
+          <Sidebar tab={tab} setTab={setTab} />
+          {renderTab()}
         </> : <User user={user} setUser={setUser} />
       }
     </Box>

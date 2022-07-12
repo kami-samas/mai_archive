@@ -7,7 +7,7 @@ pub mod state;
 
 use serde::{Deserialize, Serialize};
 use surf::{Config, Url};
-use chrono::{DateTime, Utc, Timelike};
+use chrono::{Utc, Timelike};
 
 pub const BASE_API: &str = "http://45.134.10.233:8989";
 pub const USER: &str = "/v1/user";
@@ -29,6 +29,12 @@ struct UserResponse {
     pub email: String,
     pub created_at: String,
     pub token: String,
+}
+
+#[derive(Deserialize, Serialize, Debug)]
+struct InfoResponse {
+    projects: u16,
+    users: u16
 }
 
 #[tauri::command]
@@ -111,6 +117,12 @@ async fn get_am_pm() -> Result<Response, ErrorResponse> {
     })
 }
 
+#[tauri::command]
+async fn get_info(
+    state: tauri::State<'_, state::State>,
+) -> Response<InfoResponse, ErrorResponse> {
+    let mut res = state.client.get(USER);
+}
 fn main() {
     let context = tauri::generate_context!();
     tauri::Builder::default()
@@ -126,7 +138,7 @@ fn main() {
             user_update,
             user_delete,
             user_login,
-            get_am_pm
+            get_am_pm,
         ])
         // .menu(tauri::Menu::os_default(&context.package_info().name))
         .run(context)

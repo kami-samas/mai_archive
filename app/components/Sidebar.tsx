@@ -4,8 +4,6 @@ import {
   Icon,
   useColorModeValue,
   Link,
-  Drawer,
-  DrawerContent,
   useDisclosure,
   BoxProps,
   FlexProps,
@@ -17,53 +15,44 @@ import {
 } from 'react-icons/fi';
 import { GoSignOut } from 'react-icons/go';
 import { IconType } from 'react-icons';
-import { localforage } from '../helpers/hooks/useLocalForage';
 
 interface LinkItemProps {
   name: string;
   icon: IconType;
-  execute?: () => void;
+  execute: (props?: any) => any | undefined;
 }
 const LinkItems: Array<LinkItemProps> = [
-  { name: 'Home', icon: FiHome },
-  { name: 'Projects', icon: FiCompass },
-  { name: 'Settings', icon: FiSettings },
-  { name: 'Sign Out', icon: GoSignOut, execute: () => {
-    localforage.removeItem('user');
-    window.location.reload();
-  } },
+  { name: 'Home', icon: FiHome, execute: (setTab) => { setTab('Home') } },
+  { name: 'Projects', icon: FiCompass, execute: (setTab) => { setTab('Projects') } },
+  { name: 'Settings', icon: FiSettings, execute: (setTab) => { setTab('Settings') } },
+  {
+    name: 'Sign Out', icon: GoSignOut, execute: () => {
+      // localforage.removeItem('user');
+      // window.location.reload();
+    }
+  },
 ];
 
 export const Sidebar = ({
-}) => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  tab, setTab,
+}: { tab: string; setTab: any; }) => {
   return (
     <>
       <SidebarContent
-        onClose={() => onClose}
+        tab={tab}
+        setTab={setTab}
         display={{ base: 'none', md: 'block' }}
       />
-      <Drawer
-        autoFocus={false}
-        isOpen={isOpen}
-        placement="left"
-        onClose={onClose}
-        returnFocusOnClose={false}
-        onOverlayClick={onClose}
-        size="full">
-        <DrawerContent>
-          <SidebarContent onClose={onClose} />
-        </DrawerContent>
-      </Drawer>
     </>
   );
 }
 
 interface SidebarProps extends BoxProps {
-  onClose: () => void;
+  tab: string;
+  setTab: any;
 }
 
-const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
+const SidebarContent = ({ tab, setTab, ...rest }: SidebarProps) => {
   return (
     <Box
       transition="ease"
@@ -72,11 +61,10 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
       w={{ base: 'full', md: 60 }}
       pos="fixed"
       color={"primary.300"}
-      onClick={onClose}
       h="full"
       {...rest}>
       {LinkItems.map((link) => (
-        <NavItem key={link.name} icon={link.icon} onClick={link.execute ? link.execute : () => {}}>
+        <NavItem key={link.name} p={6} color={tab === link.name ? "white" : ""} bgGradient={tab === link.name ? "linear(to-r, red.400,pink.400)" : ""} icon={link.icon} onClick={link.execute ? () => link.execute(setTab) : () => {}}>
           {link.name}
         </NavItem>
       ))}
@@ -93,13 +81,12 @@ const NavItem = ({ icon, children, ...rest }: NavItemProps) => {
     <Link href="#" style={{ textDecoration: 'none' }} _focus={{ boxShadow: 'none' }}>
       <Flex
         align="center"
-        p="6"
         mx="4"
         borderRadius="lg"
         role="group"
         cursor="pointer"
         _hover={{
-          bgGradient:'linear(to-r, red.500,pink.500)',
+          bgGradient: 'linear(to-r, red.500,pink.500)',
           color: 'white',
         }}
         {...rest}>

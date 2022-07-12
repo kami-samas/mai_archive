@@ -17,7 +17,7 @@ export const Home = () => {
         <Container display='flex'>
             <Flex flexDirection='column' pt={{ base: "full", md: "50px" }}>
                 <SimpleGrid>
-                    <Card p="25px" width="300%">
+                    <Card p="25px" width="400%">
                         <CardBody>
                             <Flex flexDirection='row' align='center' justify='center' w='100%'>
                                 <Stat me='auto'>
@@ -51,7 +51,7 @@ export const Home = () => {
                         </CardBody>
                     </Card>
                     <br />
-                    <Card p="25px" width="300%">
+                    <Card p="25px" width="400%">
                         <CardBody>
                             <Flex flexDirection='row' align='center' justify='center' w='100%'>
                                 <Stat me='auto'>
